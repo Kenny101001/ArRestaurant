@@ -20,7 +20,7 @@ Route::get('/deco', [App\Http\Controllers\LoginController::class, 'deco'])->name
 
 
 Route::get('/home', [App\Http\Controllers\AdminController::class, 'home'])->name('home');
-Route::get('/ajouterEntreprise', [App\Http\Controllers\AdminController::class, 'ajouterEntreprise'])->name('ajouterEntreprise');
+Route::post('/ajouterEntreprise', [App\Http\Controllers\AdminController::class, 'ajouterEntreprise'])->name('ajouterEntreprise');
 
 
 Route::get('/statistique', action: [App\Http\Controllers\StatistiqueController::class, 'statistique'])->name('statistique');

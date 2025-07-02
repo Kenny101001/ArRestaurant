@@ -2,7 +2,24 @@
 
 @section('content')
 
+
 <div style="padding: 2em;">
+    @if ($errors->any())
+        <div style="font-family: 'Montserrat', sans-serif;color: #d00000;" class="">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if (session()->has('success'))
+        <div style="font-family: 'Montserrat', sans-serif; color: #52b788;" class="" role="alert">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div>
         <button class="btn btn-lg btn-block" type="button" style="background-color: #FFCC00; border-color: transparent; color: white;" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Ajouter une nouvelle entreprise
@@ -18,17 +35,50 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('ajouterEntreprise') }}" method="post" enctype="multipart/form-data">
+                    <form enctype="multipart/form-data" id="insertEntreprise" method="POST" action="{{ route('ajouterEntreprise') }}">
                         @csrf
 
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="name" name="name" required>
-                            <label for="name" class="form-label">Nom de l'entreprise</label>
+                            <input type="text" class="form-control" id="nom" name="nom" required>
+                            <label for="nom" class="form-label">Nom de l'entreprise</label>
                         </div>
+
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="address" name="address" required>
-                            <label for="address" class="form-label">Adresse</label>
+                            <input type="file" class="form-control" id="logo" name="logo" accept="image/*" >
+                            <label for="logo" class="form-label">Logo</label>
                         </div>
+
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="adresse" name="adresse" required>
+                            <label for="adresse" class="form-label">Adresse</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <select class="form-select" aria-label="Type" name="type" id="type" required>
+                                <option value="" disabled selected>Choisissez le type</option>
+                                @foreach ($typeEntreprises as $typeEntreprise)
+                                    <option value="{{ $typeEntreprise->id }}">{{ $typeEntreprise->type }}</option>
+                                @endforeach
+                                <option value="new">Nouveau type +</option>
+                            </select>
+                            <input type="text" class="form-control mt-2" id="new_typeEntreprise" name="new_typeEntreprise" placeholder="Nom du nouveau type d'entreprise" style="display: none;">
+
+                            <label for="type" class="form-label">Type de l'entreprise</label>
+                        </div>
+
+                        <script>
+                            document.getElementById('type').addEventListener('change', function() {
+                                var newClientInput = document.getElementById('new_typeEntreprise');
+                                if (this.value === 'new') {
+                                    newClientInput.style.display = 'block';
+                                    newClientInput.required = true;
+                                } else {
+                                    newClientInput.style.display = 'none';
+                                    newClientInput.required = false;
+                                }
+                            });
+                        </script>
+
                         <div class="mb-3">
                             <input type="text" class="form-control" id="phone" name="phone" required>
                             <label for="phone" class="form-label">Numéro de téléphone</label>
@@ -42,6 +92,16 @@
                             <label for="website" class="form-label">Site web</label>
                         </div>
 
+                        <div class="mb-3">
+                            <select class="form-select" aria-label="forfait" name="forfait" required>
+                                <option value="" disabled selected>Choisissez le forfait</option>
+                                @foreach ($forfaits as $forfait)
+                                    <option value="{{ $forfait->id }}">{{ $forfait->nom }} ({{ $forfait->prix }}€, {{ $forfait->nb3d }} modèles 3D)</option>
+                                @endforeach
+                            </select>
+                            <label for="forfait" class="form-label">Forfait</label>
+                        </div>
+
                         <button type="submit" class="btn btn-lg btn-block" style="background-color: #FFCC00; border-color: transparent; color: white;" >Ajouter</button>
                     </form>
                 </div>
@@ -51,12 +111,13 @@
 
 </div>
 
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function () {
-        $(document).on('submit', 'form[action="{{ route('ajouterEntreprise') }}"]', function (e) {
+        $(document).on('submit', '#insertEntreprise', function (e) {
             e.preventDefault(); // Empêche le rechargement de la page
 
-            const formData = $(this).serialize(); // Sérialise les données du formulaire
+            const formElement = document.getElementById('insertEntreprise');
+            const formData = new FormData(formElement);
 
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
@@ -67,9 +128,14 @@
             });
 
             $.ajax({
-                type: 'post',
+                type: 'POST',
                 url: '{{ route("ajouterEntreprise") }}',
                 data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
 
                 success: function (response) {
                     swalWithBootstrapButtons.fire(
@@ -101,5 +167,5 @@
             });
         });
     });
-</script>
+</script> -->
 @endsection
