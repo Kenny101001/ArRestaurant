@@ -20,7 +20,7 @@ class LoginController extends Controller
         return view('identification.login');
     }
 
-    public function loginVerifAdmin()
+    public function loginVerifAdmin(Request $request)
     {
         $email = request()->input('email');
         $mdp = request()->input("mdp");
