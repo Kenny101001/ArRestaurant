@@ -98,7 +98,7 @@
 
                     {{-- Boutons d'action --}}
                     <div class="d-flex justify-content-between mt-3">
-                        <a href="{{ route('modifierProduit', $produit->id) }}" class="btn btn-sm">
+                        <a href="{{ route('modifierProduit', $produit->id) }}" class="btn  btn-sm">
                             <i class="bi bi-pencil-square"></i> Modifier
                         </a>
 
