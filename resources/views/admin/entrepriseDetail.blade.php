@@ -80,40 +80,60 @@
 
     <h2 class="mb-4">Liste des produits</h2>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    @foreach ($produits as $produit)
-        <div class="col">
-            <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-                {{-- Image interactive (Quick Look) --}}
-                <div class="card-img-top position-relative" style="cursor: pointer;" onclick="window.location.href='{{ Storage::url($produit->url_3d) }}'">
-                    <div class="card-imgs pv" data-quicklook="true"></div>
-                </div>
+    @php
+    use Jenssegers\Agent\Agent;
+    $agent = new Agent();
+    @endphp
 
-                {{-- Contenu de la carte --}}
-                <div class="card-body d-flex flex-column justify-content-between p-3">
-                    <div>
-                        <h5 class="card-title mb-2">{{ $produit->nom }}</h5>
-                        <span class="badge bg-secondary mb-2">{{ $produit->type_plat_nom }}</span>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach ($produits as $produit)
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+
+                    {{-- Image preview statique --}}
+                    <div class="card-img-top position-relative" style="background-color: #f5f5f5; min-height: 180px;">
+                        <div class="card-imgs pv" data-quicklook="true"></div>
                     </div>
 
-                    {{-- Boutons d'action --}}
-                    <div class="d-flex justify-content-between mt-3">
-                        <a href="{{ route('modifierProduit', $produit->id) }}" class="btn  btn-sm">
-                            <i class="bi bi-pencil-square"></i> Modifier
-                        </a>
+                    {{-- Contenu de la carte --}}
+                    <div class="card-body d-flex flex-column justify-content-between p-3">
+                        <div>
+                            <h5 class="card-title mb-2">{{ $produit->nom }}</h5>
+                            <span class="badge bg-secondary mb-2">{{ $produit->type_plat_nom }}</span>
 
-                        <form action="{{ route('supprimerProduit', $produit->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce plat ?')">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash3"></i> Supprimer
-                            </button>
-                        </form>
+                            {{-- Bouton AR / Téléchargement --}}
+                            @php $usdzUrl = Storage::url($produit->url_3d); @endphp
+
+                            @if ($agent->isiOS())
+                                <a href="{{ $usdzUrl }}" rel="ar" class="btn btn-outline-primary btn-sm w-100 mt-2">
+                                    <i class="bi bi-eye"></i> Voir en réalité augmentée
+                                </a>
+                            @else
+                                <a href="{{ $usdzUrl }}" download class="btn btn-outline-secondary btn-sm w-100 mt-2">
+                                    <i class="bi bi-download"></i> Télécharger le modèle 3D
+                                </a>
+                            @endif
+                        </div>
+
+                        {{-- Boutons d'action --}}
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <a href="{{ route('modifierProduit', $produit->id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i> Modifier
+                            </a>
+
+                            <form action="{{ route('supprimerProduit', $produit->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce plat ?')">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash3"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endforeach
-</div>
+        @endforeach
+    </div>
+
 
 
 
